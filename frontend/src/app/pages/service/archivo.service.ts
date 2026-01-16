@@ -14,6 +14,10 @@ export class ArchivoService {
         return httpResource<ArchivoResult[]>(() => this.BASE_URL);
     }
 
+    getAllArchivosBySemestreActive(): HttpResourceRef<ArchivoResult[] | undefined> {
+        return httpResource<ArchivoResult[]>(() => `${this.BASE_URL}/semestre-activo`);
+    }
+
     getArchivo(id: Signal<string>): HttpResourceRef<ArchivoResult | undefined> {
         return httpResource<ArchivoResult>(() => {
             const idValue = id();

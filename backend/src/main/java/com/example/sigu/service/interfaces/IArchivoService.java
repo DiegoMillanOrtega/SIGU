@@ -11,7 +11,7 @@ public interface IArchivoService {
     Archivo guardarArchivo(MultipartFile file, ArchivoRequest request) throws IOException;
     Archivo findById(Long id);
     List<Archivo> findAll();
+    List<Archivo> findAllBySemestreActivo();
     void eliminarArchivo(Long id) throws IOException;
-
     Archivo actualizarArchivo(Long id, ArchivoRequest request, MultipartFile file) throws IOException;
 }

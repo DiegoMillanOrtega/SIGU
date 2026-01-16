@@ -32,6 +32,14 @@ public class ArchivoController {
                 .toList();
     }
 
+    @GetMapping("/semestre-activo")
+    public List<ArchivoResponse> findAllBySemestreActivo(){
+        return archivoService.findAllBySemestreActivo()
+                .stream()
+                .map(archivoMapper::toResponse)
+                .toList();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ArchivoResponse> findById(@PathVariable Long id){
         return ResponseEntity.ok(archivoMapper.toResponse(archivoService.findById(id)));

@@ -53,6 +53,11 @@ public class ArchivoServiceImpl implements IArchivoService {
     }
 
     @Override
+    public List<Archivo> findAllBySemestreActivo() {
+        return repository.findArchivosBySemestreActivo();
+    }
+
+    @Override
     public void eliminarArchivo(Long id) throws IOException {
         Archivo archivoAEliminar = findById(id);
 
