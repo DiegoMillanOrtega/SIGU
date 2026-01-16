@@ -11,7 +11,6 @@ import java.time.LocalDate;
 public record TareaPatchRequest(
         String titulo,
         String descripcion,
-        @FutureOrPresent(message = "La fecha de entrega debe ser hoy o posterior.")
         LocalDate fechaEntrega,
         Prioridad prioridad,
         Long materiaId,

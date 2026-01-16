@@ -3,9 +3,7 @@ package com.example.sigu.service.implementation;
 import com.example.sigu.persistence.entity.Tarea;
 import com.example.sigu.persistence.enums.Estado;
 import com.example.sigu.persistence.repository.ITareaRepository;
-import com.example.sigu.presentation.dto.tarea.TareaRequest;
-import com.example.sigu.presentation.dto.tarea.TareaPatchRequest;
-import com.example.sigu.service.exception.ArchivoNotFoundException;
+import com.example.sigu.presentation.dto.tarea.*;
 import com.example.sigu.service.exception.GoogleIntegrationException;
 import com.example.sigu.service.exception.TareaNotFoundException;
 import com.example.sigu.service.implementation.google.GoogleTasksService;
@@ -97,6 +95,11 @@ public class TareaServiceImpl implements ITareaService {
     }
 
     @Override
+    public List<Tarea> findAll(Long materiaId, EstadoTareaRequest estado) {
+        return repository.findAll(securityUtils.getCurrentUserId(), estado.name(),  materiaId);
+    }
+
+    @Override
     public List<Tarea> findAll() {
         return repository.findAllByMateria_Semestre_UsuarioId(securityUtils.getCurrentUserId());
     }
@@ -109,6 +112,23 @@ public class TareaServiceImpl implements ITareaService {
             throw new AccessDeniedException("\"Acceso Denegado: No tienes permiso para eliminar la tarea con ID: \" + id");
         }
 
-        repository.delete(tareaToDelete);
+        try {
+            googleTasksService.deleteTask(tareaToDelete.getTaskListId(), tareaToDelete.getTaskId());
+            log.info("Tarea con ID {} eliminada en Google Tasks", id);
+
+            repository.delete(tareaToDelete);
+        } catch (IOException ex) {
+            log.error("Error al eliminar tarea con Google Tasks: {}", ex.getMessage());
+            throw new GoogleIntegrationException("No se pudo eliminar la tarea en Google Tasks", ex);
+        }
+
     }
+
+    @Override
+    public TareaStasts getGlobalStats() {
+        return repository.getGlobalStats();
+    }
+
+
+
 }

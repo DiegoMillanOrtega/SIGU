@@ -1,0 +1,1 @@
+export type TareaEstado = 'PENDIENTE' | 'COMPLETADA' | 'ATRASADA' | 'HOY';

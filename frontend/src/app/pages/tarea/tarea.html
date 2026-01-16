@@ -1,0 +1,124 @@
+@if (
+  tareasPendientes.isLoading() ||
+  tareasCompletadas.isLoading() ||
+  materiasResource.isLoading()
+) {
+  <app-loading></app-loading>
+} @else {
+  
+  <p-toolbar class="mb-4">
+    <ng-template pTemplate="start">
+      <p-selectbutton
+        [options]="sectionOptions"
+        [(ngModel)]="sectionValue"
+        optionLabel="label"
+        optionValue="value"
+        aria-labelledby="basic"
+      >
+        <ng-template
+          pTemplate="item"
+          let-item
+        >
+          <span [class]="item.icon"></span>
+          <span>{{ item.label }}</span>
+        </ng-template>
+      </p-selectbutton>
+    </ng-template>
+    <ng-template pTemplate="end">
+      <p-select
+        [options]="materiasResource.value()"
+        optionLabel="nombre"
+        optionValue="id"
+        placeholder="Filtrar por materia"
+        showClear="true"
+        [(ngModel)]="materiaSeleccionada"
+        class="mr-2"
+      ></p-select>
+      <p-button
+        label="Nueva tarea"
+        icon="pi pi-plus"
+        routerLink="/pages/tareas/agregar"
+      />
+    </ng-template>
+  </p-toolbar>
+
+  @if (sectionValue() === 'tablero') {
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <p-card class="border-t-4 border-blue-900">
+        <ng-template pTemplate="title">
+          <div class="flex items-center justify-between">
+            <span class="font-bold">Pendientes</span>
+            <div class="flex items-center gap-2">
+              <p-button
+                text="true"
+                icon="pi pi-sort-alt"
+                severity="secondary"
+                (onClick)="sortMenu.toggle($event)"
+              />
+
+              <span
+                class="text-xl !text-center font-bold bg-gray-200 dark:bg-gray-800 text-muted-foreground rounded py-1 px-2"
+              >
+                {{ tareasPendientesFiltrada().length || 0 }}
+              </span>
+            </div>
+          </div>
+        </ng-template>
+
+        <!-- Content -->
+
+        @for (tarea of tareasPendientesFiltrada(); track tarea.id) {
+          <app-tarea-panel
+            [tarea]="tarea"
+            [tareaAtrasada]="tarea.id | tareaAtrasada: tareasAtrasadas()"
+            (onEstadoChange)="cambiarEstadoTarea($event)"
+            (onEditar)="redirectToEditar($event)"
+            (onVerArchivo)="abrirEnlanceArchivo($event)"
+            (onEliminar)="eliminarTarea($event)"
+          ></app-tarea-panel>
+        } @empty {
+          <span>No hay tareas pendientes.</span>
+        }
+      </p-card>
+
+      <p-card class="border-t-4 border-green-600">
+        <ng-template pTemplate="title">
+          <div class="flex items-center justify-between">
+            <span class="font-bold">Completadas</span>
+            <span
+              class="text-xl font-bold bg-gray-200 dark:bg-gray-800 text-muted-foreground rounded py-1 px-2"
+            >
+              {{ tareasCompletadas.value()?.length || 0 }}
+            </span>
+          </div>
+        </ng-template>
+
+        @for (tarea of tareasCompletadas.value(); track tarea.id) {
+          <app-tarea-panel
+            [tarea]="tarea"
+            [esTareaCompletada]="true"
+            (onEstadoChange)="cambiarEstadoTarea($event)"
+            (onEditar)="redirectToEditar($event)"
+          ></app-tarea-panel>
+        } @empty {
+          <span>No hay tareas completadas.</span>
+        }
+      </p-card>
+    </div>
+  }
+  @if (sectionValue() === 'calendario') {
+    <app-tarea-calendario
+      [tareasPendientes]="tareasPendientes.value()"
+    ></app-tarea-calendario>
+  }
+}
+
+<app-loading-spinner-overlay
+  [isLoading]="loading()"
+></app-loading-spinner-overlay>
+
+<p-menu
+  #sortMenu
+  [model]="sortOptions"
+  [popup]="true"
+></p-menu>

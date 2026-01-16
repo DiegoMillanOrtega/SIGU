@@ -1,9 +1,8 @@
 package com.example.sigu.presentation.controller;
 
 import com.example.sigu.persistence.entity.Tarea;
-import com.example.sigu.presentation.dto.tarea.TareaPatchRequest;
-import com.example.sigu.presentation.dto.tarea.TareaRequest;
-import com.example.sigu.presentation.dto.tarea.TareaResponse;
+import com.example.sigu.persistence.enums.Estado;
+import com.example.sigu.presentation.dto.tarea.*;
 import com.example.sigu.service.interfaces.ITareaService;
 import com.example.sigu.util.mapper.TareaMapper;
 import jakarta.validation.Valid;
@@ -23,11 +22,16 @@ public class TareaController {
     private final TareaMapper mapper;
 
     @GetMapping
-    public List<TareaResponse> findAll() {
-        return service.findAll()
-                .stream()
-                .map(mapper::toResponse)
-                .toList();
+    public List<TareaResponse> findAll(
+            @RequestParam(required = false) Long materiaId,
+            @RequestParam(required = false) EstadoTareaRequest estado
+    ) {
+        return service.findAll(materiaId, estado).stream().map(mapper::toResponse).toList();
+    }
+
+    @GetMapping("/stats")
+    public TareaStasts tareasStats() {
+        return service.getGlobalStats();
     }
 
     @GetMapping("/{id}")

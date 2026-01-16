@@ -17,6 +17,7 @@ import java.time.ZonedDateTime;
 public interface GoogleTaskMapper {
 
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "title", source = "titulo")
     @Mapping(target = "notes", expression = "java(formatNotes(tarea))")
     @Mapping(target = "due", expression = "java(formatDueDate(tarea))")

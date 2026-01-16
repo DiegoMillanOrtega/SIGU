@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum Estado {
     PENDIENTE("needsAction"),
+    ENPROCESO("process"),
     COMPLETADA("completed");
 
     private final String googleStatus;

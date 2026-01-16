@@ -73,7 +73,14 @@ export class AppMenu {
                     },
                     {
                         label: 'Tareas',
-                        icon: 'pi pi-fw pi-check-square'
+                        icon: 'pi pi-fw pi-check-square',
+                        routerLink: ['/pages/tareas'],
+                        routerLinkActiveOptions: {
+                            paths: 'subset', // Indica que si es una sub-ruta, siga activo
+                            queryParams: 'ignored',
+                            matrixParams: 'ignored',
+                            fragment: 'ignored'
+                        }
                     },
                     {
                         label: 'Calculadora de Notas',

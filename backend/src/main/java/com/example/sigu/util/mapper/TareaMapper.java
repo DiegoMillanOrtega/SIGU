@@ -21,6 +21,15 @@ public interface TareaMapper {
     @Mapping(target = "archivo", ignore = true)
     void updateEntityFromPatch(TareaPatchRequest request, @MappingTarget Tarea entity);
 
+    @Mapping(target = "materiaId", source = "materia.id")
+    @Mapping(target = "materiaNombre", source = "materia.nombre")
+    @Mapping(target = "semestreId", source = "materia.semestre.id")
+    @Mapping(target = "semestreNombre", source = "materia.semestre.nombre")
+    @Mapping(target = "archivoId", source = "archivo.id")
+    @Mapping(target = "archivoNombre", source = "archivo.nombre")
+    @Mapping(target = "archivoView", source = "archivo.googleDriveWebViewLink")
     TareaResponse toResponse(Tarea tarea);
+
+    TareaPatchRequest toPatchRequest(Tarea tarea);
 
 }

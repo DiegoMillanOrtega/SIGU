@@ -1,0 +1,150 @@
+@if (materias.isLoading() || archivos.isLoading()) {
+    <app-loading></app-loading>
+}
+@else {
+    <form
+      [formGroup]="tareaForm"
+      (ngSubmit)="onSubmit()"
+      class="card"
+    >
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 space-y-2">
+        <div class="flex flex-col col-span-2 gap-2">
+          <label
+            for="titulo"
+            class="font-semibold"
+          >
+            Titulo *
+          </label>
+          <input
+            id="titulo"
+            pInputText
+            type="text"
+            placeholder="Ej: Entregar ensayo de Historia"
+            formControlName="titulo"
+            [invalid]="controlInvalido('titulo')"
+          />
+          @if (controlInvalido('titulo')) {
+            <small class="text-red-500">El título es obligatorio.</small>
+          }
+        </div>
+        <div class="flex flex-col col-span-2 gap-2">
+          <label
+            for="descripcion"
+            class="font-semibold"
+          >
+            Descripción
+          </label>
+          <textarea
+            id="descripcion"
+            pInputTextarea
+            type="text"
+            placeholder="Detalles de la tarea..."
+            rows="4"
+            cols="30"
+            formControlName="descripcion"
+          ></textarea>
+        </div>
+        <div class="flex flex-col gap-2">
+          <label
+            for="materia"
+            class="font-semibold"
+          >
+            Materia *
+          </label>
+          <p-select
+            id="materia"
+            formControlName="materiaId"
+            [options]="materias.value()"
+            optionLabel="nombre"
+            optionValue="id"
+            placeholder="Selecciona una materia"
+            [invalid]="controlInvalido('materiaId')"
+          ></p-select>
+    
+          @if (controlInvalido('materiaId')) {
+            <small class="text-red-500">La materia es obligatoria.</small>
+          }
+        </div>
+        <div class="flex flex-col gap-2">
+          <label
+            for="fechaEntrega"
+            class="font-semibold"
+          >
+            Fecha de entrega *
+          </label>
+          <p-datepicker
+            id="fechaEntrega"
+            formControlName="fechaEntrega"
+            dateFormat="yy-mm-dd"
+            placeholder="yyyy-mm-dd"
+            [showIcon]="true"
+            [invalid]="controlInvalido('fechaEntrega')"
+          ></p-datepicker>
+          @if (controlInvalido('fechaEntrega')) {
+            <small class="text-red-500">La fecha de entrega es obligatoria.</small>
+          }
+        </div>
+    
+        <div class="flex flex-col gap-2">
+          <label
+            for="archivo"
+            class="font-semibold"
+          >
+            Archivo
+          </label>
+          <p-select
+            id="archivo"
+            formControlName="archivoId"
+            [options]="archivos.value()"
+            optionLabel="nombre"
+            optionValue="id"
+            placeholder="Selecciona un archivo"
+            [invalid]="controlInvalido('archivoId')"
+          ></p-select>
+          @if (controlInvalido('archivoId')) {
+            <small class="text-red-500">El archivo es obligatorio.</small>
+          }
+        </div>
+    
+        <div class="flex flex-col gap-2">
+          <label
+            for="prioridad"
+            class="font-semibold"
+          >
+            Prioridad *
+          </label>
+          <p-select
+            id="prioridad"
+            formControlName="prioridad"
+            [options]="prioridades"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Selecciona la prioridad"
+            [invalid]="controlInvalido('prioridad')"
+          ></p-select>
+          @if (controlInvalido('prioridad')) {
+            <small class="text-red-500">La prioridad es obligatoria.</small>
+          }
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 mt-3">
+        <p-button
+          label="Cancelar"
+          icon="pi pi-times"
+          severity="secondary"
+          outlined="true"
+          routerLink="/pages/tareas"
+        ></p-button>
+        <p-button
+          label="Guardar"
+          icon="pi pi-check"
+          severity="success"
+          type="submit"
+        ></p-button>
+      </div>
+    </form>
+}
+
+<app-loading-spinner-overlay
+  [isLoading]="loading()"
+></app-loading-spinner-overlay>

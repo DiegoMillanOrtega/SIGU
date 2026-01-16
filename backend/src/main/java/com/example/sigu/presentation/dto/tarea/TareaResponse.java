@@ -17,8 +17,13 @@ public record TareaResponse(
         String taskListId,
         LocalDate fechaEntrega,
         Prioridad prioridad,
-        MateriaResponse materia,
-        ArchivoResponse archivo,
+        Long materiaId,
+        String materiaNombre,
+        Long semestreId,
+        String semestreNombre,
+        Long archivoId,
+        String archivoNombre,
+        String archivoView,
         Estado estado
 ) {
 }
