@@ -2,6 +2,7 @@ package com.example.sigu.presentation.advice;
 
 import com.example.sigu.presentation.dto.ErrorResponse;
 import com.example.sigu.service.exception.*;
+import com.google.api.client.auth.oauth2.TokenResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -178,10 +179,30 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(GoogleIntegrationException.class)
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    //TODO: Mejorar el handleGoogleException
     public ErrorResponse handleGoogleIntegrationException(GoogleIntegrationException ex) {
+        if (ex.getCause() instanceof TokenResponseException tokenException) {
+            if ("invalid_grant".equals(tokenException.getDetails().getError())) {
+                return new ErrorResponse(
+                        HttpStatus.BAD_GATEWAY.value(),
+                        "TOKEN_EXPIRED: El token de Google ha expirado. Re-autenticación necesaria.",
+                        Instant.now()
+                );
+            }
+        }
         return new ErrorResponse(
                 HttpStatus.BAD_GATEWAY.value(),
                 ex.getMessage(),
+                Instant.now()
+        );
+    }
+
+    @ExceptionHandler(TokenResponseException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleGoogleTokenException(TokenResponseException ex) {
+        return new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                ex.getDetails().getError(),
                 Instant.now()
         );
     }
