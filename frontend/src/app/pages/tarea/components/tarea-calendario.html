@@ -1,4 +1,4 @@
-<p-datepicker
+<!-- <p-datepicker
   [inline]="true"
   showWeek="true"
   [ngModel]="fechas()"
@@ -6,7 +6,7 @@
   fluid
 >
 
-  <!-- <ng-template
+  <ng-template
     pTemplate="date"
     let-date
   >
@@ -20,5 +20,91 @@
     } @else {
       {{ date.day }}
     }
-  </ng-template> -->
-</p-datepicker>
+  </ng-template>
+</p-datepicker> -->
+
+<div class="space-y-4">
+  <p-card styleClass="p-4">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-bold">
+        {{ currentMonthName }} {{ currentYear }}
+      </h2>
+
+      <div class="flex items-center gap-2">
+        <p-button
+          icon="pi pi-chevron-left"
+          [outlined]="true"
+          size="small"
+          (onClick)="previousMonth()"
+        />
+        <p-button
+          label="Hoy"
+          [outlined]="true"
+          size="small"
+          (onClick)="goToToday()"
+        />
+        <p-button
+          icon="pi pi-chevron-right"
+          [outlined]="true"
+          size="small"
+          (onClick)="nextMonth()"
+        />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-7 gap-2 mb-2">
+      @for (dayName of weekDays; track dayName) {
+        <div class="text-center text-sm font-semibold text-muted-foreground">
+          {{ dayName }}
+        </div>
+      }
+    </div>
+
+    <div class="grid grid-cols-7 gap-2">
+      @for (item of calendarDays(); track $index) {
+        @if (item.day === null) {
+          <div class="aspect-square"></div>
+        } @else {
+          <div
+            [class]="
+              'p-2 aspect-square flex flex-col border rounded-lg transition-colors hover:bg-accent/50 ' +
+              (item.isToday ? 'border-primary border-2' : 'border-gray-200')
+            "
+          >
+            <div
+              [class]="
+                'text-sm font-semibold mb-1 ' +
+                (item.isToday ? 'text-primary' : 'text-foreground')
+              "
+            >
+              {{ item.day }}
+            </div>
+
+            <div class="flex-1 overflow-y-auto space-y-1">
+              @for (task of item.tasks.slice(0, 3); track task.id) {
+                <div
+                  [class]="
+                    'text-xs p-1 rounded truncate cursor-pointer ' +
+                    (task.estado === 'completed'
+                      ? 'bg-muted text-muted-foreground line-through'
+                      : 'bg-primary/10 text-primary hover:bg-primary/20')
+                  "
+                  (click)="handleTaskClick(task)"
+                  [title]="task.titulo"
+                >
+                  {{ task.titulo }}
+                </div>
+              }
+
+              @if (item.tasks.length > 3) {
+                <div class="text-xs text-muted-foreground">
+                  +{{ item.tasks.length - 3 }} más
+                </div>
+              }
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </p-card>
+</div>
