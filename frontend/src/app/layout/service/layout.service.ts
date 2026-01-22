@@ -88,8 +88,6 @@ export class LayoutService {
         effect(() => {
             const config = this.layoutConfig();
             if (config) {
-                console.log(config);
-
                 this.onConfigUpdate();
             }
         });

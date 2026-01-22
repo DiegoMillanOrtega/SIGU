@@ -33,8 +33,6 @@ export class AuthService {
                 const authResponse = user as AuthResponse;
                 this.setUserId(authResponse.userId);
                 this.currentUser.set(authResponse);
-                console.log(authResponse);
-                
             }),
             catchError(err => {
                 this.currentUser.set(null);
