@@ -15,5 +15,8 @@
     --color-muted: var(--muted);
     --color-muted-foreground: var(--muted-foreground);
     --color-destructive: var(--destructive);
-    --color-border: var(--border);
+    
+    --color-status-safe: var(--status-safe);
+    --color-status-warning: var(--status-warning);
+    --color-status-critical: var(--status-critical);
 }
