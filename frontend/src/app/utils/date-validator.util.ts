@@ -29,3 +29,11 @@ export function esFechaHoy(fechaInput: string): boolean {
 
   return fecha.getTime() === hoy.getTime();
 }
+
+export function diasHasta(fecha: string): number {
+  const hoy = normalizarFecha(new Date());
+  const fechaFinal = normalizarFecha(fecha);
+
+  const dias = Math.ceil((fechaFinal.getTime() - hoy.getTime()) / 86400000);
+  return dias;
+}
