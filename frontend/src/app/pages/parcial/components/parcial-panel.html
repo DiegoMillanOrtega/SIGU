@@ -1,0 +1,101 @@
+@let diasRestantes = parcial().fecha | diasRestantes;
+
+<p-panel
+  class="!border-l-4"
+  [class]="parcial().prioridad | prioridadStyleBorder"
+>
+  <ng-template pTemplate="header">
+    <span class="text-lg font-bold">{{ parcial().materiaNombre }}</span>
+  </ng-template>
+
+  <ng-template pTemplate="icons">
+    <p-menu
+      #menu
+      [model]="items"
+      [popup]="true"
+    />
+    <p-button
+      (click)="menu.toggle($event)"
+      icon="pi pi-ellipsis-v"
+      [outlined]="true"
+      severity="secondary"
+      [text]="true"
+    />
+  </ng-template>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div class="flex flex-col gap-2">
+      <small
+        class="flex items-center text-gray-400 dark:text-gray-700 font-black text-xs"
+      >
+        <i class="pi pi-clock mr-1"></i>
+        DIAS RESTANTES
+      </small>
+      <span
+        class="text-xl font-black"
+        [class]="diasRestantes.textClass"
+      >
+        {{ diasRestantes.label }}
+      </span>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <small
+        class="flex items-center text-gray-400 dark:text-gray-700 font-black text-xs"
+      >
+        <i class="pi pi-calendar mr-1"></i>
+        FECHA
+      </small>
+      <span class="font-bold">
+        {{ parcial().fecha | formatDateCustom }}
+      </span>
+    </div>
+
+    <!-- <div class="col-span-2">
+            <p-divider />
+          </div> -->
+
+    <div class="flex flex-col gap-2">
+      <small class="text-gray-400 dark:text-gray-700 font-black text-xs">
+        PRIORIDAD
+      </small>
+      <p-tag
+        class="capitalize"
+        [severity]="parcial().prioridad | prioridadSeverity"
+        [value]="parcial().prioridad"
+      />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <small class="text-gray-400 dark:text-gray-700 font-black text-xs">
+        TIPO
+      </small>
+      <p-tag
+        class="capitalize"
+        severity="info"
+        [value]="parcial().tipo"
+      />
+    </div>
+  </div>
+
+  <!-- <div class="flex justify-between">
+
+        </div>
+
+        
+        <div class="flex justify-between">
+        </div> -->
+
+  <!-- <div class="flex items-center gap-4 mb-3">
+          <div class="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <i class="pi pi-calendar"></i>
+            <span>{{ parcial.fecha | formatDateCustom }}</span>
+          </div>
+
+          <div class="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <i class="pi pi-clock"></i>
+            <span>{{ parcial.hora | formatTime12 }}</span>
+          </div>
+
+        </div> -->
+</p-panel>

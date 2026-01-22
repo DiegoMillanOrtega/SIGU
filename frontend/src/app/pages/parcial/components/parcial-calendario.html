@@ -1,0 +1,88 @@
+<p-card styleClass="shadow-sm">
+  <ng-template pTemplate="header">
+    <div class="flex items-center justify-between p-6 pb-4">
+      <h5 class="text-lg font-semibold m-0">
+        {{ currentMonthLabel }} {{ currentYear }}
+      </h5>
+      <div class="flex items-center gap-1">
+        <p-button
+          icon="pi pi-chevron-left"
+          [text]="true"
+          severity="secondary"
+          (onClick)="prevMonth()"
+          styleClass="h-9 w-9"
+          ariaLabel="Mes anterior"
+        />
+        <p-button
+          icon="pi pi-chevron-right"
+          [text]="true"
+          severity="secondary"
+          (onClick)="nextMonth()"
+          styleClass="h-9 w-9"
+          ariaLabel="Mes siguiente"
+        />
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="px-1">
+    <div class="grid grid-cols-7 gap-1 mb-2">
+      @for (dayName of days; track dayName) {
+        <div class="text-center text-xs font-medium text-muted-foreground py-2">
+          {{ dayName }}
+        </div>
+      }
+    </div>
+
+    <div class="grid grid-cols-7 gap-1">
+      @for (item of calendarDays(); track $index) {
+        @if (item.empty) {
+          <div class="h-12 md:h-24"></div>
+        } @else {
+          <button
+            type="button"
+            (click)="onDayClick(item.date!)"
+            [class]="
+              'h-12 md:h-24 p-1 md:p-2 rounded-lg border border-transparent transition-all duration-200 flex flex-col items-start cursor-pointer ' +
+              'hover:border-primary/30 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-primary/50 ' +
+              (item.isToday ? 'bg-primary/10 border-primary/30 ' : '') +
+              (item.isSelected
+                ? 'bg-primary/20 border-primary ring-2 ring-primary/50'
+                : '')
+            "
+          >
+            <span
+              [class]="
+                'text-sm font-medium w-6 h-6 md:w-7 md:h-7 flex items-center justify-center rounded-full ' +
+                (item.isToday ? 'bg-primary text-primary-foreground' : '')
+              "
+            >
+              {{ item.day }}
+            </span>
+
+            <div class="flex flex-wrap gap-1 mt-1 w-full">
+              @for (exam of item.dayExams!.slice(0, 3); track exam.id) {
+                <div
+                  class="hidden md:block w-full rounded-full bg-primary text-xs truncate p-1 text-muted-foreground"
+                  [title]="exam.materiaNombre"
+                  (click)="onEditParcial.emit(exam)"
+                >
+                  {{ exam.materiaNombre }}
+                </div>
+                
+              }
+
+              @if (item.dayExams!.length > 0) {
+                <div class="md:hidden flex gap-0.5">
+                  @for (exam of item.dayExams!.slice(0, 3); track exam.id) {
+                    <div class="w-1.5 h-1.5 rounded-full"></div>
+                  }
+                </div>
+              }
+            </div>
+          </button>
+        }
+      }
+    </div>
+  </div>
+</p-card>

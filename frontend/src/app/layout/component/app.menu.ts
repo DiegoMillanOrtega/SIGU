@@ -88,7 +88,8 @@ export class AppMenu {
                     },
                     {
                         label: 'Parciales',
-                        icon: 'pi pi-fw pi-calendar'
+                        icon: 'pi pi-fw pi-calendar',
+                        routerLink: ['/pages/parciales'],
                     },
                     {
                         label: 'Archivos',

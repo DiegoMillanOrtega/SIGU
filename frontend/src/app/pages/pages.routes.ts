@@ -8,6 +8,7 @@ export default [
     { path: 'materias', loadChildren: () => import('./materia/materia.routes') },
     { path: 'archivos', loadChildren: () => import('./archivo/archivo.routes') },
     { path: 'tareas', loadChildren: () => import('./tarea/tarea.routes') },
+    { path: 'parciales', loadChildren: () => import('./parcial/parcial.routes') },
     { path: 'documentation', component: Documentation },
     { path: 'crud', component: Crud },
     { path: 'empty', component: Empty },

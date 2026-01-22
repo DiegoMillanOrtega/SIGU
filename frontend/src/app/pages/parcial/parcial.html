@@ -1,0 +1,42 @@
+<div class="space-y-6">
+  <p-toolbar>
+    <ng-template pTemplate="start">
+      <app-parcial-estado-filtro (onFilterChange)="activeFilter.set($event)" />
+    </ng-template>
+
+    <ng-template pTemplate="end">
+      <p-button
+        label="Nuevo parcial"
+        icon="pi pi-plus"
+        (onClick)="visibleForm.set(true)"
+      />
+    </ng-template>
+  </p-toolbar>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
+    <div class="lg:col-span-7 xl:col-span-8">
+      <app-parcial-calendario
+        [parciales]="parcialesFiltrados()"
+        (dateSelect)="fechaSeleccionada.set($event)"
+        (onEditParcial)="parcialSeleccionado.set($event)"
+      />
+    </div>
+
+    <div class="lg:col-span-5 xl:col-span-4 space-y-6">
+      <app-parcial-lista
+        [parciales]="parcialesFiltrados()"
+        (onEditParcial)="parcialSeleccionado.set($event)"
+        (onDeleteParcial)="deleteParcial($event)"
+      />
+    </div>
+  </div>
+</div>
+
+<app-parcial-form
+  [(visible)]="visibleForm"
+  [parcialInput]="parcialSeleccionado()"
+  [fecha]="fechaSeleccionada()"
+  (onFormSubmit)="parcialesResource.reload()"
+/>
+
+<app-loading-spinner-overlay [isLoading]="loading()" />

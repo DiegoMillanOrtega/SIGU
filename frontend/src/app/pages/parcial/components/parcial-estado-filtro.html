@@ -1,0 +1,29 @@
+<div class="">
+  <p-selectbutton
+    [options]="filtros"
+    [(ngModel)]="activeFilter"
+    optionLabel="label"
+    optionValue="value"
+    aria-labelledby="basic"
+  >
+    <ng-template
+      pTemplate="item"
+      let-item
+    >
+      @if (item.icon) {
+        <span [class]="item.icon"></span>
+      }
+      <span>{{ item.label }}</span>
+    </ng-template>
+  </p-selectbutton>
+  <!-- @for (filtro of filtros; track filtro.value) {
+    <p-button
+      [class]=""
+      [label]="filtro.label"
+      [outlined]="activeFilter() === filtro.value ? false : true"
+      size="small"
+      [icon]="filtro.icon"
+      (onClick)="onFilterChange.emit(filtro.value)"
+    />
+  } -->
+</div>

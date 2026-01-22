@@ -1,0 +1,26 @@
+<p-card class="!shadow-sm">
+  <ng-template pTemplate="title">
+    <div class="!mb-5">
+      <i class="pi pi-book mr-2 text-primary !text-xl"></i>
+      <span class="text-xl font-bold">Próximos Parciales</span>
+    </div>
+  </ng-template>
+
+  @for (parcial of parciales(); track parcial.id) {
+  
+    <!-- @if (diasRestantes.dias >= 0) {
+      <p-tag [severity]="diasRestantes.severity" [value]="diasRestantes.label"></p-tag>
+    } -->
+
+    <div class="space-y-4 mb-4">
+      <app-parcial-panel [parcial]="parcial" (onParcialEdit)="onEditParcial.emit($event)" (onParcialDelete)="onDeleteParcial.emit($event)"></app-parcial-panel>
+    </div>
+  } @empty {
+    <div class="text-center py-8">
+      <p class="text-muted-foreground">No hay parciales pendientes</p>
+      <p class="text-sm text-muted-foreground/70 mt-1">
+        ¡Agenda tu próximo examen!
+      </p>
+    </div>
+  }
+</p-card>

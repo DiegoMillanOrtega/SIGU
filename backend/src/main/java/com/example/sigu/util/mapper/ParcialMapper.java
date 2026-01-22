@@ -20,5 +20,7 @@ public interface ParcialMapper {
     @Mapping(target = "materia", ignore = true)
     Parcial toEntity(ParcialRequest request);
 
+    @Mapping(target = "materiaId", source = "parcial.materia.id")
+    @Mapping(target = "materiaNombre", source = "parcial.materia.nombre")
     ParcialResponse toResponse(Parcial parcial);
 }

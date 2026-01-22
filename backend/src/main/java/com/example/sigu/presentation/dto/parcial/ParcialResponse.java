@@ -1,6 +1,8 @@
 package com.example.sigu.presentation.dto.parcial;
 
 
+import com.example.sigu.persistence.enums.ParcialEstado;
+import com.example.sigu.persistence.enums.Prioridad;
 import com.example.sigu.persistence.enums.TipoEvaluacion;
 import com.example.sigu.presentation.dto.materia.MateriaResponse;
 
@@ -15,6 +17,9 @@ public record ParcialResponse(
         String lugar,
         String temaEvaluar,
         String notaAdicional,
-        MateriaResponse materia
+        ParcialEstado estado,
+        Long materiaId,
+        String materiaNombre,
+        Prioridad prioridad
 ) {
 }

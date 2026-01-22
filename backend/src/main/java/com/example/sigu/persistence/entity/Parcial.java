@@ -1,5 +1,7 @@
 package com.example.sigu.persistence.entity;
 
+import com.example.sigu.persistence.enums.ParcialEstado;
+import com.example.sigu.persistence.enums.Prioridad;
 import com.example.sigu.persistence.enums.TipoEvaluacion;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -34,6 +36,12 @@ public class Parcial {
     private String lugar;
     private String temaEvaluar;
     private String notaAdicional;
+
+    @Enumerated(EnumType.STRING)
+    private ParcialEstado estado;
+
+    @Enumerated(EnumType.STRING)
+    private Prioridad prioridad;
 
     @ManyToOne
     @JoinColumn(name = "materia_id", foreignKey = @ForeignKey(name = "fk_parcial_materia"))

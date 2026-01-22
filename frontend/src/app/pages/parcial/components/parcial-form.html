@@ -1,0 +1,241 @@
+@if (materias.isLoading()) {
+  <app-loading />
+} @else {
+  <p-dialog
+    [header]="esEdicion() ? 'Editar Parcial' : 'Programar Nuevo Parcial'"
+    [(visible)]="visible"
+    modal="true"
+  >
+    <form
+      [formGroup]="form"
+      (ngSubmit)="guardarForm()"
+    >
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 space-y-2">
+        <!-- MATERIA -->
+        <div class="flex flex-col gap-2">
+          <label
+            for="materia"
+            class="font-semibold"
+          >
+            <i class="pi pi-book"></i>
+            Materia
+          </label>
+          <p-select
+            id="materia"
+            formControlName="materiaId"
+            class="w-full"
+            [options]="materias.value()"
+            optionLabel="nombre"
+            optionValue="id"
+            placeholder="Selecciona una materia"
+            [showClear]="true"
+            [invalid]="controlInvalido('materiaId')"
+          ></p-select>
+
+          @if (controlInvalido('materiaId')) {
+            <p-message
+              severity="error"
+              variant="simple"
+            >
+              La materia es obligatoria.
+            </p-message>
+          }
+        </div>
+
+        <!-- LUGAR -->
+
+        <div class="flex flex-col gap-2">
+          <label
+            for="lugar"
+            class="font-semibold"
+          >
+            <i class="pi pi-map-marker"></i>
+            Lugar
+          </label>
+          <input
+            id="lugar"
+            pInputText
+            type="text"
+            placeholder="Lugar"
+            formControlName="lugar"
+          />
+        </div>
+
+        <!-- TIPO -->
+        <div class="flex flex-col col-span-2 gap-2">
+          <label
+            for="tipo"
+            class="font-semibold"
+          >
+            Tipo
+          </label>
+          <p-selectbutton
+            [options]="tipos"
+            formControlName="tipo"
+            fluid
+            [invalid]="controlInvalido('tipo')"
+          >
+            <ng-template
+              pTemplate="item"
+              let-item
+            >
+              <div class="flex flex-col items-center gap-2 p-1">
+                <span [class]="item.icon"></span>
+                <span>{{ item.label }}</span>
+              </div>
+            </ng-template>
+          </p-selectbutton>
+
+          @if (controlInvalido('tipo')) {
+            <p-message
+              severity="error"
+              variant="simple"
+            >
+              El tipo es obligatoria.
+            </p-message>
+          }
+        </div>
+
+        <!-- FECHA -->
+        <div class="flex flex-col gap-2">
+          <label
+            for="fecha"
+            class="font-semibold"
+          >
+            <i class="pi pi-calendar"></i>
+            Fecha
+          </label>
+          <p-datepicker
+            id="fecha"
+            formControlName="fecha"
+            dateFormat="yy-mm-dd"
+            placeholder="yyyy-mm-dd"
+            [showIcon]="true"
+            showOnFocus="false"
+            appendTo="body"
+            [invalid]="controlInvalido('fecha')"
+          ></p-datepicker>
+
+          @if (controlInvalido('fecha')) {
+            <p-message
+              severity="error"
+              variant="simple"
+            >
+              La fecha es obligatoria.
+            </p-message>
+          }
+        </div>
+
+        <!-- HORA -->
+        <div class="flex flex-col gap-2">
+          <label
+            for="hora"
+            class="font-semibold"
+          >
+            <i class="pi pi-clock"></i>
+            Hora
+          </label>
+          <p-datepicker
+            id="hora"
+            formControlName="hora"
+            timeOnly="true"
+            hourFormat="12"
+            [invalid]="controlInvalido('hora')"
+          />
+          @if (controlInvalido('hora')) {
+            <p-message
+              severity="error"
+              variant="simple"
+            >
+              La hora es obligatoria.
+            </p-message>
+          }
+        </div>
+
+        <div class="flex flex-col col-span-2 gap-2">
+          <label
+            for="prioridad"
+            class="font-semibold"
+          >
+            <i class="pi pi-flag"></i>
+            Prioridad
+          </label>
+          <p-selectbutton [options]="prioridades" fluid formControlName="prioridad">
+            <ng-template
+              pTemplate="item"
+              let-item
+            >
+              <div class="flex flex-col items-center gap-2 p-1">
+                <span [class]="item.icon"></span>
+                <span>{{ item.label }}</span>
+              </div>
+            </ng-template>
+          </p-selectbutton>
+          @if (controlInvalido('prioridad')) {
+            <p-message
+              severity="error"
+              variant="simple"
+            >
+              La prioridad es obligatoria.
+            </p-message>
+          }
+        </div>
+
+        <!-- TEMAS A EVALUAR -->
+        <div class="flex flex-col col-span-2 gap-2">
+          <label
+            for="temaEvaluar"
+            class="font-semibold"
+          >
+            <i class="pi pi-comment"></i>
+            Temas a evaluar
+          </label>
+          <textarea
+            rows="3"
+            cols="30"
+            pTextarea
+            formControlName="temaEvaluar"
+          ></textarea>
+        </div>
+
+        <!-- NOTAS ADICIONALES -->
+        <div class="flex flex-col col-span-2 gap-2">
+          <label
+            for="notaAdicional"
+            class="font-semibold"
+          >
+            <i class="pi pi-comment"></i>
+            Notas adicionales
+          </label>
+          <textarea
+            rows="3"
+            cols="30"
+            pTextarea
+            formControlName="notaAdicional"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- BOTONES -->
+      <div class="flex justify-end gap-2 mt-3">
+        <p-button
+          label="Cancelar"
+          icon="pi pi-times"
+          severity="secondary"
+          outlined="true"
+          (onClick)="visible.set(false)"
+        ></p-button>
+        <p-button
+          label="Guardar"
+          icon="pi pi-check"
+          severity="success"
+          type="submit"
+        ></p-button>
+      </div>
+    </form>
+  </p-dialog>
+}
+
+<app-loading-spinner-overlay
+  [isLoading]="loading()"
+></app-loading-spinner-overlay>
