@@ -30,6 +30,14 @@ public class ParcialController {
                 .toList();
     }
 
+    @GetMapping("semestre-activo")
+    public List<ParcialResponse> findAllSemestreActivo() {
+        return service.findAllBySemestreActivo()
+                .stream()
+                .map(mapper::toResponse)
+                .toList();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ParcialResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(mapper.toResponse(service.findById(id)));

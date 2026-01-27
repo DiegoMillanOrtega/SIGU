@@ -13,6 +13,7 @@ import {
     TareaStats,
 } from '@/interface/tarea-response-list.interface';
 import { TareaEstado } from '@/interface/tarea-estado.interface';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class TareaService {
@@ -55,16 +56,16 @@ export class TareaService {
         );
     }
 
-    saveTarea(tarea: TareaRequest) {
-        return this.http.post(this.baseUrl, tarea);
+    create(tarea: TareaRequest): Observable<TareaResponse> {
+        return this.http.post<TareaResponse>(this.baseUrl, tarea);
     }
 
-    patchTarea(id: string, tarea: TareaPatchRequest) {
-        return this.http.patch(`${this.baseUrl}/${id}`, tarea);
+    patchTarea(id: string, tarea: Partial<TareaRequest>): Observable<TareaResponse> {
+        return this.http.patch<TareaResponse>(`${this.baseUrl}/${id}`, tarea);
     }
 
     actualizarEstadoTarea(id: string, estado: string) {
-        return this.http.patch(`${this.baseUrl}/${id}/actualizar-estado`, {
+        return this.http.patch(`${this.baseUrl}/${id}`, {
             estado,
         });
     }

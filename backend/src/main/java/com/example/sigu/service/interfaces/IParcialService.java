@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface IParcialService {
     List<Parcial> findAll();
+    List<Parcial> findAllBySemestreActivo();
     Parcial findById(Long id);
     Parcial save(ParcialRequest request);
     void delete(Long id);

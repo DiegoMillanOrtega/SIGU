@@ -27,6 +27,7 @@ public class Semestre {
     private Integer anio;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
+    private String taskListId;
 
     @Enumerated(EnumType.STRING)
     private EstadoSemestre estado;
@@ -37,6 +38,8 @@ public class Semestre {
     @ManyToOne
     @JoinColumn(name = "usuario_id", foreignKey = @ForeignKey(name = "fk_semestre_usuario"))
     private Usuario usuario;
+
+
 
     @Transient
     public Double getProgreso() {

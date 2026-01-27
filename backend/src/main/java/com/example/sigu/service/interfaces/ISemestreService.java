@@ -14,5 +14,6 @@ public interface ISemestreService {
     Semestre findById(Long id);
     void  deleteById(Long id);
     Semestre save(SemestreRequest request);
+    Semestre patch(Long id, SemestreRequest request);
     long obtenerSemanasRestantes(Long semestreId);
 }

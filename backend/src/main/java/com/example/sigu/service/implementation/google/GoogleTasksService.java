@@ -10,6 +10,7 @@ import com.google.api.services.tasks.model.TaskList;
 import com.google.api.services.tasks.model.TaskLists;
 import com.google.api.services.tasks.model.Tasks;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -22,6 +23,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GoogleTasksService {
 
     private final com.google.api.services.tasks.Tasks tasks;
@@ -41,8 +43,15 @@ public class GoogleTasksService {
     public TaskList createTaskList(String title) throws IOException {
         TaskList taskList = new TaskList();
         taskList.setTitle(title);
-
+        log.info("Creando task list {}", title);
         return tasks.tasklists().insert(taskList).execute();
+    }
+
+    public TaskList patchTaskList(String taskListId, String newTitle) throws IOException {
+        TaskList content = new TaskList();
+        content.setTitle(newTitle);
+        log.info("Actualizando el task list {}", taskListId);
+        return tasks.tasklists().patch(taskListId, content).execute();
     }
 
     //Obtiene todas las tareas de una lista específica
@@ -73,16 +82,8 @@ public class GoogleTasksService {
     }
 
     //Crea una nueva tarea en una lista específica
-    public Task createTask(String taskListId, Tarea tarea) throws IOException {
-        Task task = new Task();
-        task.setTitle(tarea.getTitulo());
-
-        String notes = String.format("Prioridad %s\n%s", tarea.getPrioridad(), tarea.getDescripcion());
-        task.setNotes(notes);
-
-        ZonedDateTime zdt = tarea.getFechaEntrega().atTime(23, 59).atZone(ZoneId.systemDefault());
-        task.setDue(new DateTime(zdt.toInstant().toEpochMilli()).toStringRfc3339());
-
+    public Task createTask(String taskListId, Task task) throws IOException {
+        log.info("Insertando tarea en Google Tasks: {}", task.getTitle());
         return tasks.tasks().insert(taskListId, task).execute();
     }
 
@@ -92,9 +93,9 @@ public class GoogleTasksService {
         return tasks.tasks().update(taskListId, taskId, task).execute();
     }
 
-    public void patchTask(Tarea tareaConCambios) throws IOException {
-        Task taskToPatch = googleTaskMapper.toTask(tareaConCambios);
-        tasks.tasks().patch(tareaConCambios.getTaskListId(), tareaConCambios.getTaskId(), taskToPatch).execute();
+    public void patchTask(String taskListId, String taskId, Task taskPatch) throws IOException {
+        log.info("Actualizando tarea {} en la lista {}", taskId, taskListId);
+        tasks.tasks().patch(taskListId, taskId, taskPatch).execute();
     }
 
     //Marca una tarea como completada
@@ -113,6 +114,17 @@ public class GoogleTasksService {
     //Elimina una lista de tareas
     public void deleteTaskList(String taskListId) throws IOException {
         tasks.tasklists().delete(taskListId).execute();
+    }
+
+    private String getPrioridadEmoji(String prioridad) {
+        if (prioridad == null) return "⚪";
+
+        return switch (prioridad.toLowerCase()) {
+            case "alta" -> "🔴";
+            case "media" -> "🟡";
+            case "baja" -> "🟢";
+            default -> "⚪";
+        };
     }
 
 }

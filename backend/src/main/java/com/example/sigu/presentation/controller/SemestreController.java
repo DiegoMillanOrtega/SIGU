@@ -47,6 +47,11 @@ public class SemestreController {
                 .body(semestreMapper.toResponse(semestre));
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<SemestreResponse> patch(@PathVariable Long id, @RequestBody SemestreRequest request) {
+        return  ResponseEntity.ok(semestreMapper.toResponse(semestreService.patch(id, request)));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         semestreService.deleteById(id);

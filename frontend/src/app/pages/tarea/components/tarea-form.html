@@ -1,14 +1,22 @@
-@if (materias.isLoading() || archivos.isLoading()) {
+
+<p-dialog
+    [(visible)]="visible"
+    [header]="headerText()"
+    modal="true"
+    [style]="{ width: '50rem' }"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+  >
+  @if (materias.isLoading() || archivos.isLoading()) {
     <app-loading></app-loading>
-}
-@else {
+  }
+  @else {
     <form
-      [formGroup]="tareaForm"
-      (ngSubmit)="onSubmit()"
-      class="card"
+      [formGroup]="form"
+      (ngSubmit)="enviar()"
+      class="px-4"
     >
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 space-y-2">
-        <div class="flex flex-col col-span-2 gap-2">
+        <div class="flex flex-col md:col-span-2 gap-2">
           <label
             for="titulo"
             class="font-semibold"
@@ -24,10 +32,18 @@
             [invalid]="controlInvalido('titulo')"
           />
           @if (controlInvalido('titulo')) {
-            <small class="text-red-500">El título es obligatorio.</small>
+            @if (form.get('titulo')?.errors?.['minlength']) {
+              <small class="text-red-500">El título debe tener al menos 3 caracteres.</small>
+            }
+            @if (form.get('titulo')?.errors?.['maxlength']) {
+              <small class="text-red-500">El título no puede superar los 50 caracteres.</small>
+            }
+            @if (form.get('titulo')?.errors?.['required']) {
+              <small class="text-red-500">El título es obligatorio.</small>
+            }
           }
         </div>
-        <div class="flex flex-col col-span-2 gap-2">
+        <div class="flex flex-col md:col-span-2 gap-2">
           <label
             for="descripcion"
             class="font-semibold"
@@ -44,6 +60,7 @@
             formControlName="descripcion"
           ></textarea>
         </div>
+
         <div class="flex flex-col gap-2">
           <label
             for="materia"
@@ -60,11 +77,12 @@
             placeholder="Selecciona una materia"
             [invalid]="controlInvalido('materiaId')"
           ></p-select>
-    
+
           @if (controlInvalido('materiaId')) {
             <small class="text-red-500">La materia es obligatoria.</small>
           }
         </div>
+
         <div class="flex flex-col gap-2">
           <label
             for="fechaEntrega"
@@ -75,22 +93,27 @@
           <p-datepicker
             id="fechaEntrega"
             formControlName="fechaEntrega"
+            readonlyInput="true"
             dateFormat="yy-mm-dd"
             placeholder="yyyy-mm-dd"
-            [showIcon]="true"
+            showIcon
+            iconDisplay="input"
             [invalid]="controlInvalido('fechaEntrega')"
+            appendTo="body"
           ></p-datepicker>
           @if (controlInvalido('fechaEntrega')) {
-            <small class="text-red-500">La fecha de entrega es obligatoria.</small>
+            <small class="text-red-500">
+              La fecha de entrega es obligatoria.
+            </small>
           }
         </div>
-    
+
         <div class="flex flex-col gap-2">
           <label
             for="archivo"
             class="font-semibold"
           >
-            Archivo
+            Añadir archivo
           </label>
           <p-select
             id="archivo"
@@ -100,12 +123,15 @@
             optionValue="id"
             placeholder="Selecciona un archivo"
             [invalid]="controlInvalido('archivoId')"
+            appendTo="body"
+            [showClear]="true"
+            [filter]="true"
           ></p-select>
           @if (controlInvalido('archivoId')) {
             <small class="text-red-500">El archivo es obligatorio.</small>
           }
         </div>
-    
+
         <div class="flex flex-col gap-2">
           <label
             for="prioridad"
@@ -121,30 +147,32 @@
             optionValue="value"
             placeholder="Selecciona la prioridad"
             [invalid]="controlInvalido('prioridad')"
+            appendTo="body"
           ></p-select>
           @if (controlInvalido('prioridad')) {
             <small class="text-red-500">La prioridad es obligatoria.</small>
           }
         </div>
       </div>
-      <div class="flex justify-end gap-2 mt-3">
+
+      <div class="grid grid-cols-2 gap-2 mt-8">
         <p-button
+          styleClass="w-full"
+          severity="primary"
           label="Cancelar"
           icon="pi pi-times"
-          severity="secondary"
           outlined="true"
-          routerLink="/pages/tareas"
+          (onClick)="visible.set(false)"
         ></p-button>
         <p-button
+          styleClass="w-full"
           label="Guardar"
           icon="pi pi-check"
-          severity="success"
+          severity="primary"
           type="submit"
         ></p-button>
       </div>
     </form>
-}
+  }
+  </p-dialog>
 
-<app-loading-spinner-overlay
-  [isLoading]="loading()"
-></app-loading-spinner-overlay>

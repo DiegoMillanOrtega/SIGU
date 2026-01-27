@@ -20,6 +20,8 @@ public interface ArchivoMapper {
     @Mapping(target = "materia", ignore = true)
     Archivo toEntity(ArchivoRequest request);
 
+    @Mapping(target = "materiaId", source = "archivo.materia.id")
+    @Mapping(target = "materiaNombre", source = "archivo.materia.nombre")
     ArchivoResponse toResponse(Archivo archivo);
 
     @Mapping(target = "googleDriveFileId", source = "file.id")

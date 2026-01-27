@@ -11,6 +11,10 @@ export class ParcialService {
         return httpResource<Parcial[]>(() => this.baseUrl);
     }
 
+    getParcialesSemestreActivo() {
+        return httpResource<Parcial[]>(() => `${this.baseUrl}/semestre-activo`);
+    }
+
     saveParcial(parcial: ParcialRequest) {
         return this.http.post<Parcial>(this.baseUrl, parcial);
     }

@@ -1,124 +1,55 @@
-@if (
-  tareasPendientes.isLoading() ||
-  tareasCompletadas.isLoading() ||
-  materiasResource.isLoading()
-) {
-  <app-loading></app-loading>
-} @else {
-  
-  <p-toolbar class="mb-4">
-    <ng-template pTemplate="start">
-      <p-selectbutton
-        [options]="sectionOptions"
-        [(ngModel)]="sectionValue"
-        optionLabel="label"
-        optionValue="value"
-        aria-labelledby="basic"
-      >
-        <ng-template
-          pTemplate="item"
-          let-item
-        >
-          <span [class]="item.icon"></span>
-          <span>{{ item.label }}</span>
-        </ng-template>
-      </p-selectbutton>
-    </ng-template>
-    <ng-template pTemplate="end">
-      <p-select
-        [options]="materiasResource.value()"
-        optionLabel="nombre"
-        optionValue="id"
-        placeholder="Filtrar por materia"
-        showClear="true"
-        [(ngModel)]="materiaSeleccionada"
-        class="mr-2"
-      ></p-select>
+<p-card styleClass="shadow-sm">
+  <ng-template pTemplate="title">
+    <div class="flex items-center justify-between flex-wrap gap-4">
+      <span class="text-2xl font-bold">Gestión de Tareas</span>
       <p-button
-        label="Nueva tarea"
+        label="Nueva Tarea"
         icon="pi pi-plus"
-        routerLink="/pages/tareas/agregar"
+        severity="success"
+        [outlined]="true"
+        (onClick)="tareaSeleccionada.set(null); formVisible.set(true)"
       />
-    </ng-template>
-  </p-toolbar>
-
-  @if (sectionValue() === 'tablero') {
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <p-card class="border-t-4 border-blue-900">
-        <ng-template pTemplate="title">
-          <div class="flex items-center justify-between">
-            <span class="font-bold">Pendientes</span>
-            <div class="flex items-center gap-2">
-              <p-button
-                text="true"
-                icon="pi pi-sort-alt"
-                severity="secondary"
-                (onClick)="sortMenu.toggle($event)"
-              />
-
-              <span
-                class="text-xl !text-center font-bold bg-gray-200 dark:bg-gray-800 text-muted-foreground rounded py-1 px-2"
-              >
-                {{ tareasPendientesFiltrada().length || 0 }}
-              </span>
-            </div>
-          </div>
-        </ng-template>
-
-        <!-- Content -->
-
-        @for (tarea of tareasPendientesFiltrada(); track tarea.id) {
-          <app-tarea-panel
-            [tarea]="tarea"
-            [tareaAtrasada]="tarea.id | tareaAtrasada: tareasAtrasadas()"
-            (onEstadoChange)="cambiarEstadoTarea($event)"
-            (onEditar)="redirectToEditar($event)"
-            (onVerArchivo)="abrirEnlanceArchivo($event)"
-            (onEliminar)="eliminarTarea($event)"
-          ></app-tarea-panel>
-        } @empty {
-          <span>No hay tareas pendientes.</span>
-        }
-      </p-card>
-
-      <p-card class="border-t-4 border-green-600">
-        <ng-template pTemplate="title">
-          <div class="flex items-center justify-between">
-            <span class="font-bold">Completadas</span>
-            <span
-              class="text-xl font-bold bg-gray-200 dark:bg-gray-800 text-muted-foreground rounded py-1 px-2"
-            >
-              {{ tareasCompletadas.value()?.length || 0 }}
-            </span>
-          </div>
-        </ng-template>
-
-        @for (tarea of tareasCompletadas.value(); track tarea.id) {
-          <app-tarea-panel
-            [tarea]="tarea"
-            [esTareaCompletada]="true"
-            (onEstadoChange)="cambiarEstadoTarea($event)"
-            (onEditar)="redirectToEditar($event)"
-          ></app-tarea-panel>
-        } @empty {
-          <span>No hay tareas completadas.</span>
-        }
-      </p-card>
     </div>
-  }
-  @if (sectionValue() === 'calendario') {
-    <app-tarea-calendario
-      [tareasPendientes]="tareasPendientes.value()"
-    ></app-tarea-calendario>
-  }
+  </ng-template>
+
+  <div class="mt-6">
+    @if (tareasResource.isLoading()) {
+      <div class="flex justify-center p-8">
+        <app-loading />
+      </div>
+    } @else if (tareasResource.error()) {
+      <div class="flex flex-col items-center gap-4 p-8 border-2 border-dashed border-red-200 rounded-xl">
+        <i class="pi pi-exclamation-circle text-red-500 text-4xl"></i>
+        <p class="text-lg font-medium">No pudimos cargar tus tareas</p>
+        <p-button
+          label="Reintentar"
+          icon="pi pi-refresh"
+          styleClass="p-button-text"
+          (onClick)="tareasResource.reload()"
+        />
+      </div>
+    } @else {
+      <div class="flex flex-col gap-8">
+        
+        <app-tarea-table
+          headerTable="Pendientes"
+          [tareas]="tareasResource.value() ?? []"
+          (onStatusChange)="actualizarTareaEstado($event)"
+          (onEditTarea)="tareaSeleccionada.set($event); formVisible.set(true)"
+          (onDelete)="eliminarTarea($event)"
+        />
+      </div>
+    }
+  </div>
+</p-card>
+
+@defer (on idle; prefetch on idle) {
+  <app-tarea-form
+    [(visible)]="formVisible"
+    [tarea]="tareaSeleccionada()"
+    (onSave)="crearTarea($event)"
+    (onUpdate)="actualizarTarea($event)"
+  />
 }
 
-<app-loading-spinner-overlay
-  [isLoading]="loading()"
-></app-loading-spinner-overlay>
-
-<p-menu
-  #sortMenu
-  [model]="sortOptions"
-  [popup]="true"
-></p-menu>
+<app-loading-spinner-overlay [isLoading]="loading()" />

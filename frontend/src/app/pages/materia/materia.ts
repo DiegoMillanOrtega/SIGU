@@ -65,7 +65,7 @@ export default class Materia {
 
     //HttpResources
     semestresResource = this.semestreService.getAllSemestres();
-    materiasResource = this.materiaService.getAllMaterias();
+    materiasResource = this.materiaService.getAllMateriasBySemestreActivo();
 
     //Variables
     readonly TODOS_LOS_SEMESTRES = '0';

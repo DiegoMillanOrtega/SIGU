@@ -47,4 +47,9 @@ public class Tarea {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Estado estado;
+
+
 }
+
+
+

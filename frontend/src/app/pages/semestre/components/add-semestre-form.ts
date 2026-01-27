@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, OnInit } from '@angular/core';
+import { Component, computed, effect, inject, input, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
@@ -20,26 +20,28 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { MessageModule } from 'primeng/message';
 import { EstadoSemestreColorPipe } from 'src/shared/pipes/estado-semestre.pipe';
+import { LoadingComponent } from "@/layout/component/app.loading";
+import { TareaRequest } from '@/interface/tarea-request.interface';
 
 @Component({
     selector: 'app-add-semestre-form',
     imports: [
-        CardModule,
-        InputTextModule,
-        ReactiveFormsModule,
-        SelectModule,
-        DatePickerModule,
-        SelectModule,
-        IftaLabelModule,
-        DividerModule,
-        ButtonModule,
-        RouterLink,
-        ToastModule,
-        MessageModule,
-        EstadoSemestreColorPipe
-    ],
+    CardModule,
+    InputTextModule,
+    ReactiveFormsModule,
+    SelectModule,
+    DatePickerModule,
+    SelectModule,
+    IftaLabelModule,
+    DividerModule,
+    ButtonModule,
+    RouterLink,
+    ToastModule,
+    MessageModule,
+    EstadoSemestreColorPipe,
+    LoadingComponent
+],
     standalone: true,
-    providers: [MessageService],
     templateUrl: 'add-semestre-form.html',
 })
 export default class AddSemestreForm {
@@ -52,6 +54,8 @@ export default class AddSemestreForm {
 
 
     readonly id = input<string>('');
+
+    loading = signal(false);
 
     esEdicion = computed(() => !!this.id());
     headerText = computed(() =>
@@ -112,7 +116,14 @@ export default class AddSemestreForm {
         this.formEnviado = true;
         console.log(this.semestreForm.invalid);
 
-        if (this.semestreForm.invalid) return;
+        if (this.semestreForm.invalid) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Debe completar todos los campos obligatorios',
+            });
+            return;
+        };
 
         const payload: SemestreInterface = formatFormDates(
             this.semestreForm.value,
@@ -124,19 +135,48 @@ export default class AddSemestreForm {
             payload.usuarioId = userId;
         }
 
-        this.semestreService.guardaSemestre(formatFormDates(payload)).subscribe(
-            (semestre) => {
-                this.formEnviado = false;
+        this.loading.set(true);
+
+        const request$ = this.esEdicion()
+            ? this.semestreService.actualizarSemestre(this.id(), this.getDirtyValues())
+            : this.semestreService.guardaSemestre(payload);
+
+        
+        request$.subscribe({
+            next: () => {
+                this.messageService.add({
+                    severity: 'success',
+                    summary: `Semestre ${this.esEdicion() ? 'actualizado' : 'creado'} correctamente`,
+                    life: 3000,
+                });
                 this.router.navigate(['/pages/semestres']);
             },
-            (err) => {
+            error: (err) => {
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Error',
-                    detail: err.error.message,
-                    life: 5000,
+                    detail:
+                        err.error?.message || 'Error al procesar la solicitud',
                 });
+                this.loading.set(false);
             },
-        );
+            complete: () => {
+                this.formEnviado = false;
+                this.loading.set(false);
+            },
+        });
+    }
+
+    getDirtyValues(): Partial<SemestreInterface> {
+        const dirtyValues: any = {};
+
+        Object.keys(this.semestreForm.controls).forEach((key) => {
+            const control = this.semestreForm.get(key);
+            if (control?.dirty) {
+                dirtyValues[key] = control.value;
+            }
+        });
+
+        return dirtyValues;
     }
 }

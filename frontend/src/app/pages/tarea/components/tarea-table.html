@@ -1,0 +1,259 @@
+<p-table
+  #dt
+  [value]="tareas()"
+  [selection]="tareasChecked()"
+  dataKey="id"
+  (onRowSelect)="cambiarEstado($event.data, true)"
+  (onRowUnselect)="cambiarEstado($event.data, false)"
+  [globalFilterFields]="['titulo', 'descripcion', 'prioridad', 'materiaNombre']"
+  [sortOrder]="-1"
+  sortField="estado"
+>
+  <ng-template #caption>
+    <div class="flex justify-between">
+      <p-button
+        [outlined]="true"
+        icon="pi pi-filter-slash"
+        label="Clear"
+        (click)="dt.clear()"
+      />
+      <p-iconfield
+        iconPosition="left"
+        class="ml-auto"
+      >
+        <p-inputicon>
+          <i class="pi pi-search"></i>
+        </p-inputicon>
+        <input
+          #inputFilter
+          pInputText
+          type="text"
+          (input)="dt.filterGlobal(inputFilter.value, 'contains')"
+          placeholder="Buscar"
+        />
+      </p-iconfield>
+    </div>
+  </ng-template>
+  <ng-template #header>
+    <tr>
+      <th>Titulo</th>
+
+      <!-- Materia -->
+      <th>
+        <div class="flex items-center justify-between">
+          Materia
+          <p-columnFilter
+            matchMode="equals"
+            field="materiaNombre"
+            display="menu"
+            [showMatchModes]="false"
+            [showOperator]="false"
+            [showAddButton]="false"
+          >
+            <ng-template
+              #filter
+              let-value
+              let-filter="filterCallback"
+            >
+              <p-select
+                [ngModel]="value"
+                optionLabel="nombre"
+                optionValue="nombre"
+                [options]="materiasResource.value()"
+                [loading]="materiasResource.isLoading()"
+                (onChange)="filter($event.value)"
+                placeholder="Seleccione una materia"
+                class="w-full"
+              />
+            </ng-template>
+          </p-columnFilter>
+        </div>
+      </th>
+
+      <!-- Fecha de entrega -->
+      <th pSortableColumn="fechaEntrega">
+        <div class="flex items-center justify-between gap-2">
+          Fecha de entrega
+
+          <p-sortIcon field="fechaEntrega" />
+          <p-columnFilter
+            type="text"
+            field="fechaEntrega"
+            display="menu"
+            
+          >
+            <ng-template
+              #filter
+              let-value
+              let-filter="filterCallback"
+            >
+              <p-datepicker
+                [ngModel]="value"
+                dateFormat="yy-mm-dd"
+                (onSelect)="filter(formatearFecha($event))"
+                placeholder="Seleccione fecha"
+                readonlyInput="true"
+              ></p-datepicker>
+            </ng-template>
+          </p-columnFilter>
+        </div>
+      </th>
+
+      <!-- Prioridad -->
+      <th>
+        <div class="flex items-center justify-between">
+          Prioridad
+          <p-columnFilter
+            matchMode="equals"
+            field="prioridad"
+            display="menu"
+            [showMatchModes]="false"
+            [showOperator]="false"
+            [showAddButton]="false"
+          >
+            <ng-template
+              #filter
+              let-value
+              let-filter="filterCallback"
+            >
+              <p-select
+                [ngModel]="value"
+                optionValue="value"
+                [options]="optionsPrioridad"
+                (onChange)="filter($event.value)"
+                placeholder="Seleccione una prioridad"
+                class="w-full"
+              >
+                <ng-template
+                  let-selectedOption
+                  #selectedItem
+                >
+                  <p-tag
+                    [value]="selectedOption.value"
+                    [severity]="selectedOption.value | prioridadSeverity"
+                  />
+                </ng-template>
+                <ng-template
+                  let-item
+                  pTemplate="item"
+                >
+                  <p-tag
+                    [value]="item.value"
+                    [severity]="item.value | prioridadSeverity"
+                  />
+                </ng-template>
+              </p-select>
+            </ng-template>
+          </p-columnFilter>
+        </div>
+      </th>
+
+      <!-- Estado -->
+      <th pSortableColumn="estado">
+        <div class="flex justify-between items-center gap-2">
+          Estado
+          <p-sortIcon field="estado" />
+          <p-columnFilter
+            type="text"
+            field="estado"
+            display="menu"
+            [showMatchModes]="false"
+            [showOperator]="false"
+            [showAddButton]="false"
+          >
+            <ng-template
+              #filter
+              let-value
+              let-filter="filterCallback"
+            >
+              <p-select
+                [ngModel]="value"
+                optionLabel="label"
+                optionValue="value"
+                [options]="tareaEstados"
+                (onChange)="filter($event.value)"
+                placeholder="Seleccione un estado"
+                class="w-full"
+              >
+                <ng-template
+                  let-selectedOption
+                  #selectedItem
+                >
+                  <p-tag
+                    [value]="selectedOption.value"
+                    [severity]="selectedOption.value | estadoTareaSeverity"
+                  />
+                </ng-template>
+                <ng-template
+                  let-item
+                  pTemplate="item"
+                >
+                  <p-tag
+                    [value]="item.value"
+                    [severity]="item.value | estadoTareaSeverity"
+                  />
+                </ng-template>
+              </p-select>
+            </ng-template>
+          </p-columnFilter>
+        </div>
+      </th>
+
+      <th>Acciones</th>
+    </tr>
+  </ng-template>
+
+  <ng-template
+    #body
+    let-tarea
+  >
+    <tr>
+      <td class="w-sm">
+        <div class="flex items-center gap-2">
+          <p-tableCheckbox [value]="tarea" />
+          <span [class]="tarea.estado === 'COMPLETADA' ? 'line-through' : ''">
+            {{ tarea.titulo }}
+          </span>
+        </div>
+      </td>
+      <td class="">
+        <p-tag
+          [value]="tarea.materiaNombre"
+          severity="secondary"
+        ></p-tag>
+      </td>
+      <td>
+        {{ tarea.fechaEntrega | formatDateCustom }}
+      </td>
+      <td>
+        <p-tag
+          [value]="tarea.prioridad"
+          [severity]="tarea.prioridad | prioridadSeverity"
+        />
+      </td>
+
+      <td>
+        <p-tag
+          [value]="tarea.estado"
+          [severity]="tarea.estado | estadoTareaSeverity"
+        />
+      </td>
+
+      <td>
+        <p-menu
+          #menu
+          [model]="items()"
+          [popup]="true"
+          appendTo="body"
+        />
+        <p-button
+          (onClick)="tareaSeleccionada.set(tarea); menu.toggle($event)"
+          icon="pi pi-ellipsis-v"
+          [outlined]="true"
+          severity="primary"
+          [text]="true"
+        />
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

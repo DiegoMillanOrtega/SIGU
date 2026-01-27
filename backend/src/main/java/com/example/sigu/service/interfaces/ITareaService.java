@@ -9,8 +9,8 @@ public interface ITareaService {
     Tarea save(TareaRequest request);
     Tarea patch(Long tareaId, TareaPatchRequest request);
     Tarea findById(Long id);
-    List<Tarea> findAll(Long materiaId, EstadoTareaRequest estado);
     List<Tarea> findAll();
+    List<Tarea> findBySemestre(Long semestreId);
     void deleteById(Long id);
 
     TareaStasts getGlobalStats();

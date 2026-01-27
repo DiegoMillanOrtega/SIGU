@@ -1,175 +1,179 @@
-<form [formGroup]="semestreForm" (ngSubmit)="onSubmit()">
-    <p-card
-        [header]="headerText()"
-        subheader="Completa la información básica de tu período académico. Podrás agregar las materias después."
-    >
-        <div class="space-y-4 mt-5">
-            <div class="flex flex-col space-y-2">
-                <label for="nombre" class="flex items-center gap-2">
-                    <i class="pi pi-pencil text-primary"></i>
-                    Nombre del semestre
-                </label>
-                <input
-                    pInputText
-                    type="text"
-                    formControlName="nombre"
-                    id="nombre"
-                    placeholder="ej. 2025-1 o Semestre Primavera 2025"
-                    [invalid]="esInvalido('nombre')"
-                />
-                @if (esInvalido('nombre')) {
-                <p-message severity="error" size="small" variant="simple"
-                    >El nombre del semestre es obligatorio.</p-message
-                >
-                }
-            </div>
-
-            <div class="grid sm:grid-cols-2 gap-5 mt-7 mb-9">
-                <!-- Estado inicial -->
-                <div class="space-y-2">
-                    <label for="estado" class="flex items-center gap-2">
-                        <i class="pi pi-arrow-up-right text-primary"></i>
-                        Estado inicial
+@if (semestreResource.isLoading()) {
+    <app-loading/>
+} @else {
+    <form [formGroup]="semestreForm" (ngSubmit)="onSubmit()">
+        <p-card
+            [header]="headerText()"
+            subheader="Completa la información básica de tu período académico. Podrás agregar las materias después."
+        >
+            <div class="space-y-4 mt-5">
+                <div class="flex flex-col space-y-2">
+                    <label for="nombre" class="flex items-center gap-2">
+                        <i class="pi pi-pencil text-primary"></i>
+                        Nombre del semestre
                     </label>
-                    <p-select
-                        [options]="estadoOptions"
-                        optionLabel="label"
-                        optionValue="value"
-                        formControlName="estado"
-                        placeholder="Seleccione el estado inicial"
-                        inputId="estado"
-                        id="estado"
-                        [invalid]="esInvalido('estado')"
-                    >
-                        <ng-template #selectedItem let-selectedOption>
-                            <div class="flex items-center gap-2">
-                                <i
-                                    class="pi pi-circle-on"
-                                    [class]="selectedOption.value | estadoSemestreColor"
-                                    style="font-size: 0.7rem"
-                                ></i>
-                                {{ selectedOption.label }}
-                            </div>
-                        </ng-template>
-                        <ng-template let-estado #item>
-                            <div className="flex items-center gap-2">
-                                <i
-                                    class="pi pi-circle-on mr-1"
-                                    [class]="estado.value | estadoSemestreColor"
-                                    style="font-size: 0.7rem"
-                                ></i>
-                                {{ estado.label }}
-                            </div>
-                        </ng-template>
-                    </p-select>
-                    @if (esInvalido('estado')) {
+                    <input
+                        pInputText
+                        type="text"
+                        formControlName="nombre"
+                        id="nombre"
+                        placeholder="ej. 2025-1 o Semestre Primavera 2025"
+                        [invalid]="esInvalido('nombre')"
+                    />
+                    @if (esInvalido('nombre')) {
                     <p-message severity="error" size="small" variant="simple"
-                        >El estado del semestre es obligatorio.</p-message
+                        >El nombre del semestre es obligatorio.</p-message
                     >
                     }
                 </div>
-
-                <!-- Carga Académica
-                <div class="space-y-2">
-                    <label for="cargaAcademica" class="flex items-center gap-2">
-                        <i class="pi pi-arrow-up-right text-primary"></i>
-                        Carga Académica
-                    </label>
-                    <p-select [options]="cargaAcademicaOptions" optionLabel="label" optionValue="value" formControlName="cargaAcademica" placeholder="Seleccione la carga académica" inputId="cargaAcademica" id="cargaAcademica">
-                        <ng-template #selectedItem let-selectedOption>
-                            <span [class]="getCargaAcademicaClass(selectedOption.value)">{{ selectedOption.label }}</span>
-                        </ng-template>
-                        <ng-template let-cargaAcademica #item>
-                            <span [class]="getCargaAcademicaClass(cargaAcademica.value)">{{ cargaAcademica.label }}</span>
-                        </ng-template>
-                    </p-select>
-                </div> -->
-            </div>
-
-            <p-divider />
-
-            <div class="space-y-4">
-                <div class="flex items-center gap-2 font-medium">
-                    <i class="pi pi-calendar text-primary"></i>
-                    Período académico
-                </div>
-                <div class="grid sm:grid-cols-2 gap-4">
-                    <div class="flex flex-col space-y-2">
-                        <label for="fechaInicio">Fecha de inicio</label>
-                        <p-datepicker
-                            formControlName="fechaInicio"
-                            [showOnFocus]="false"
-                            [showIcon]="true"
-                            id="fechaInicio"
-                            inputId="fechaInicio"
-                            dateFormat="dd-mm-yy"
-                            placeholder="dd-mm-yyyy"
-                            [invalid]="esInvalido('fechaInicio')"
-                        />
-                        @if (esInvalido('fechaInicio')) {
-                        <p-message
-                            severity="error"
-                            size="small"
-                            variant="simple"
-                            >La fecha de inicio es obligatoria.</p-message
+    
+                <div class="grid sm:grid-cols-2 gap-5 mt-7 mb-9">
+                    <!-- Estado inicial -->
+                    <div class="space-y-2">
+                        <label for="estado" class="flex items-center gap-2">
+                            <i class="pi pi-arrow-up-right text-primary"></i>
+                            Estado inicial
+                        </label>
+                        <p-select
+                            [options]="estadoOptions"
+                            optionLabel="label"
+                            optionValue="value"
+                            formControlName="estado"
+                            placeholder="Seleccione el estado inicial"
+                            inputId="estado"
+                            id="estado"
+                            [invalid]="esInvalido('estado')"
+                        >
+                            <ng-template #selectedItem let-selectedOption>
+                                <div class="flex items-center gap-2">
+                                    <i
+                                        class="pi pi-circle-on"
+                                        [class]="selectedOption.value | estadoSemestreColor"
+                                        style="font-size: 0.7rem"
+                                    ></i>
+                                    {{ selectedOption.label }}
+                                </div>
+                            </ng-template>
+                            <ng-template let-estado #item>
+                                <div className="flex items-center gap-2">
+                                    <i
+                                        class="pi pi-circle-on mr-1"
+                                        [class]="estado.value | estadoSemestreColor"
+                                        style="font-size: 0.7rem"
+                                    ></i>
+                                    {{ estado.label }}
+                                </div>
+                            </ng-template>
+                        </p-select>
+                        @if (esInvalido('estado')) {
+                        <p-message severity="error" size="small" variant="simple"
+                            >El estado del semestre es obligatorio.</p-message
                         >
                         }
                     </div>
-                    <div class="flex flex-col space-y-2">
-                        <label for="fechaFin">Fecha de fin</label>
-                        <p-datepicker
-                            formControlName="fechaFin"
-                            [showOnFocus]="false"
-                            [showIcon]="true"
-                            id="fechaFin"
-                            inputId="fechaFin"
-                            dateFormat="dd-mm-yy"
-                            placeholder="dd-mm-yyyy"
-                            [invalid]="esInvalido('fechaFin')"
-                        />
-                        @if (esInvalido('fechaFin')) {
-                        <p-message
-                            severity="error"
-                            size="small"
-                            variant="simple"
-                            >La fecha de fin es obligatoria.</p-message
-                        >
-                        }
-                    </div>
-                    <!-- <label for="anio">Año</label>
-                    <p-datepicker formControlName="anio" view="year" dateFormat="yy" [showOnFocus]="false" [showIcon]="true" inputId="buttondisplay" placeholder="Año"></p-datepicker> -->
+    
+                    <!-- Carga Académica
+                    <div class="space-y-2">
+                        <label for="cargaAcademica" class="flex items-center gap-2">
+                            <i class="pi pi-arrow-up-right text-primary"></i>
+                            Carga Académica
+                        </label>
+                        <p-select [options]="cargaAcademicaOptions" optionLabel="label" optionValue="value" formControlName="cargaAcademica" placeholder="Seleccione la carga académica" inputId="cargaAcademica" id="cargaAcademica">
+                            <ng-template #selectedItem let-selectedOption>
+                                <span [class]="getCargaAcademicaClass(selectedOption.value)">{{ selectedOption.label }}</span>
+                            </ng-template>
+                            <ng-template let-cargaAcademica #item>
+                                <span [class]="getCargaAcademicaClass(cargaAcademica.value)">{{ cargaAcademica.label }}</span>
+                            </ng-template>
+                        </p-select>
+                    </div> -->
                 </div>
+    
+                <p-divider />
+    
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2 font-medium">
+                        <i class="pi pi-calendar text-primary"></i>
+                        Período académico
+                    </div>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="flex flex-col space-y-2">
+                            <label for="fechaInicio">Fecha de inicio</label>
+                            <p-datepicker
+                                formControlName="fechaInicio"
+                                [showOnFocus]="false"
+                                [showIcon]="true"
+                                id="fechaInicio"
+                                inputId="fechaInicio"
+                                dateFormat="dd-mm-yy"
+                                placeholder="dd-mm-yyyy"
+                                [invalid]="esInvalido('fechaInicio')"
+                            />
+                            @if (esInvalido('fechaInicio')) {
+                            <p-message
+                                severity="error"
+                                size="small"
+                                variant="simple"
+                                >La fecha de inicio es obligatoria.</p-message
+                            >
+                            }
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <label for="fechaFin">Fecha de fin</label>
+                            <p-datepicker
+                                formControlName="fechaFin"
+                                [showOnFocus]="false"
+                                [showIcon]="true"
+                                id="fechaFin"
+                                inputId="fechaFin"
+                                dateFormat="dd-mm-yy"
+                                placeholder="dd-mm-yyyy"
+                                [invalid]="esInvalido('fechaFin')"
+                            />
+                            @if (esInvalido('fechaFin')) {
+                            <p-message
+                                severity="error"
+                                size="small"
+                                variant="simple"
+                                >La fecha de fin es obligatoria.</p-message
+                            >
+                            }
+                        </div>
+                        <!-- <label for="anio">Año</label>
+                        <p-datepicker formControlName="anio" view="year" dateFormat="yy" [showOnFocus]="false" [showIcon]="true" inputId="buttondisplay" placeholder="Año"></p-datepicker> -->
+                    </div>
+                </div>
+    
+                <div class="flex flex-col space-y-2"></div>
+                <div class="flex flex-col"></div>
+    
+                <div class="flex flex-col"></div>
             </div>
+    
+            <ng-template #footer>
+                <div class="flex flex-col-reverse sm:flex-row gap-3">
+                    <button
+                        pButton
+                        class="w-full sm:w-auto bg-transparent"
+                        type="button"
+                        label="Cancelar"
+                        variant="outlined"
+                        severity="secondary"
+                        icon="pi pi-times"
+                        routerLink="/pages/semestres"
+                    ></button>
+                    <button
+                        pButton
+                        type="submit"
+                        [label]="labelButtonText()"
+                        class="w-full sm:flex-1"
+                        severity="success"
+                        icon="pi pi-check"
+                        size="large"
+                    ></button>
+                </div>
+            </ng-template>
+        </p-card>
+    </form>
+}
 
-            <div class="flex flex-col space-y-2"></div>
-            <div class="flex flex-col"></div>
-
-            <div class="flex flex-col"></div>
-        </div>
-
-        <ng-template #footer>
-            <div class="flex flex-col-reverse sm:flex-row gap-3">
-                <button
-                    pButton
-                    class="w-full sm:w-auto bg-transparent"
-                    type="button"
-                    label="Cancelar"
-                    variant="outlined"
-                    severity="secondary"
-                    icon="pi pi-times"
-                    routerLink="/pages/semestres"
-                ></button>
-                <button
-                    pButton
-                    type="submit"
-                    [label]="labelButtonText()"
-                    class="w-full sm:flex-1"
-                    severity="success"
-                    icon="pi pi-check"
-                    size="large"
-                ></button>
-            </div>
-        </ng-template>
-    </p-card>
-</form>
-<p-toast />

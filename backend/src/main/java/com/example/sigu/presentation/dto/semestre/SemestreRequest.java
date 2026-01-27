@@ -13,8 +13,6 @@ import java.time.LocalDate;
         fechaFin = "fechaFin"
 )
 public record SemestreRequest(
-        Long id,
-
         @NotBlank(message = "El nombre del semestre es obligatorio")
         String nombre,
 

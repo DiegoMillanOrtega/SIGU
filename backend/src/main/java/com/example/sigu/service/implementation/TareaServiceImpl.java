@@ -1,5 +1,6 @@
 package com.example.sigu.service.implementation;
 
+import com.example.sigu.persistence.entity.Semestre;
 import com.example.sigu.persistence.entity.Tarea;
 import com.example.sigu.persistence.enums.Estado;
 import com.example.sigu.persistence.repository.ITareaRepository;
@@ -11,7 +12,9 @@ import com.example.sigu.service.interfaces.IArchivoService;
 import com.example.sigu.service.interfaces.IMateriaService;
 import com.example.sigu.service.interfaces.ITareaService;
 import com.example.sigu.util.SecurityUtils;
+import com.example.sigu.util.mapper.GoogleTaskMapper;
 import com.example.sigu.util.mapper.TareaMapper;
+import com.google.api.client.util.DateTime;
 import com.google.api.services.tasks.model.Task;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -30,6 +35,7 @@ public class TareaServiceImpl implements ITareaService {
     private final ITareaRepository repository;
 
     private final TareaMapper mapper;
+    private final GoogleTaskMapper googleTaskMapper;
     private final SecurityUtils securityUtils;
 
     //Servicios
@@ -42,19 +48,23 @@ public class TareaServiceImpl implements ITareaService {
     public Tarea save(TareaRequest request)  {
         try {
             Tarea tareaAGuardar = mapper.toEntity(request);
-
             tareaAGuardar.setMateria(materiaService.findById(request.materiaId()));
 
-            if (request.archivoId() != null) tareaAGuardar.setArchivo(archivoService.findById(request.archivoId()));
+            if (request.archivoId() != null) {
+                tareaAGuardar.setArchivo(archivoService.findById(request.archivoId()));
+            }
 
-            String semestreNombre = tareaAGuardar.getMateria().getSemestre().getNombre();
+            Semestre semestre = tareaAGuardar.getMateria().getSemestre();
+            String taskListId = semestre.getTaskListId();
+            if (taskListId == null) {
+                taskListId = googleTasksService.getOrCreateTaskList(semestre.getNombre());
+            }
 
-            String taskListId = googleTasksService.getOrCreateTaskList(semestreNombre);
+            Task googleTaskRequest = googleTaskMapper.toTask(tareaAGuardar);
+            Task createdGoogleTask = googleTasksService.createTask(taskListId, googleTaskRequest);
+            log.info("Tarea creada en Google Tasks");
 
-            log.info("Sincronizando tarea '{}' con Google Tasks", tareaAGuardar.getTitulo());
-            Task googleTask = googleTasksService.createTask(taskListId, tareaAGuardar);
-
-            tareaAGuardar.setTaskId(googleTask.getId());
+            tareaAGuardar.setTaskId(createdGoogleTask.getId());
             tareaAGuardar.setTaskListId(taskListId);
             tareaAGuardar.setEstado(Estado.PENDIENTE);
 
@@ -70,22 +80,24 @@ public class TareaServiceImpl implements ITareaService {
     public Tarea patch(Long tareaId, TareaPatchRequest request) {
         Tarea tarea = findById(tareaId);
 
-        if (request.materiaId() != null) {
-            tarea.setMateria(materiaService.findById(request.materiaId()));
-        }
-
+        if (request.materiaId() != null) tarea.setMateria(materiaService.findById(request.materiaId()));
         if (request.archivoId() != null) tarea.setArchivo(archivoService.findById(request.archivoId()));
 
         mapper.updateEntityFromPatch(request, tarea);
 
-        try {
-            googleTasksService.patchTask(tarea);
-            log.info("Tarea con ID {} actualizada en Google Tasks con exito", tarea.getId());
-            return repository.save(tarea);
-        } catch (IOException e) {
-            log.error("Error al patch tarea con Google Tasks: {}", e.getMessage());
-            throw new GoogleIntegrationException("No se pudo patch la tarea en Google Tasks", e);
+        if (googleTaskMapper.hasGoogleRelatedChanges(request)) {
+            try {
+                Task googleTaskPatch = googleTaskMapper.toTaskPatch(request, tarea);
+                googleTasksService.patchTask(tarea.getTaskListId(), tarea.getTaskId(), googleTaskPatch);
+                log.info("Sincronización con Google Tasks completada.");
+            } catch (IOException e) {
+                log.error("Error al patch tarea con Google Tasks: {}", e.getMessage());
+                throw new GoogleIntegrationException("No se pudo patch la tarea en Google Tasks", e);
+            }
+        } else {
+            log.info("Cambio detectado solo a nivel local (ej. archivo), omitiendo Google Tasks.");
         }
+        return repository.save(tarea);
     }
 
     @Override
@@ -94,14 +106,15 @@ public class TareaServiceImpl implements ITareaService {
                 .orElseThrow(() -> new TareaNotFoundException("No existe tarea asociada al ID: " + id));
     }
 
-    @Override
-    public List<Tarea> findAll(Long materiaId, EstadoTareaRequest estado) {
-        return repository.findAll(securityUtils.getCurrentUserId(), estado.name(),  materiaId);
-    }
 
     @Override
     public List<Tarea> findAll() {
         return repository.findAllByMateria_Semestre_UsuarioId(securityUtils.getCurrentUserId());
+    }
+
+    @Override
+    public List<Tarea> findBySemestre(Long semestreId) {
+        return repository.findAllByMateria_SemestreId(semestreId);
     }
 
     @Override
@@ -128,6 +141,8 @@ public class TareaServiceImpl implements ITareaService {
     public TareaStasts getGlobalStats() {
         return repository.getGlobalStats();
     }
+
+
 
 
 

@@ -13,8 +13,6 @@ public record TareaResponse(
         Long id,
         String titulo,
         String descripcion,
-        String taskId,
-        String taskListId,
         LocalDate fechaEntrega,
         Prioridad prioridad,
         Long materiaId,

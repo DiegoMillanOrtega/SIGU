@@ -17,25 +17,7 @@ public interface ITareaRepository extends JpaRepository<Tarea, Long> {
     List<Tarea> findAllByMateria_Semestre_UsuarioId(Long usuarioId);
     Optional<Tarea> findByIdAndMateria_Semestre_UsuarioId(Long id, Long usuarioId);
 
-    @Query("SELECT t FROM Tarea t " +
-            "JOIN FETCH t.materia m " +
-            "JOIN FETCH m.semestre s " +
-            "LEFT JOIN FETCH t.archivo a " +
-            "WHERE s.usuario.id = :usuarioId " +
-            "AND s.estado = 'ACTIVO' " +
-            "AND (:materiaId IS NULL OR m.id = :materiaId) " +
-            "AND (" +
-            "    :tareaEstado IS NULL OR " +
-            "    (:tareaEstado = 'COMPLETADA' AND t.estado = 'COMPLETADA') OR " +
-            "    (:tareaEstado = 'PENDIENTE' AND t.estado = 'PENDIENTE') OR " +
-            "    (:tareaEstado = 'ATRASADA' AND t.estado = 'PENDIENTE' AND t.fechaEntrega < CURRENT_DATE) OR " +
-            "    (:tareaEstado = 'HOY' AND t.estado = 'PENDIENTE' AND t.fechaEntrega = CURRENT_DATE))"
-            )
-    List<Tarea> findAll(
-            @Param("usuarioId") Long usuarioId,
-            @Param("tareaEstado") String tareaEstado, // Cambiado a String para manejar 'ATRASADA'
-            @Param("materiaId") Long materiaId
-    );
+    List<Tarea> findAllByMateria_SemestreId(Long semestreId);
 
 
     @Query("SELECT new com.example.sigu.presentation.dto.tarea.TareaStasts(" +

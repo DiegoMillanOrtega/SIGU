@@ -28,6 +28,11 @@ public class ParcialServiceImpl implements IParcialService {
     }
 
     @Override
+    public List<Parcial> findAllBySemestreActivo() {
+        return repository.findAllBySemestreActivo();
+    }
+
+    @Override
     public Parcial findById(Long id) {
         return repository.findByIdAndMateria_Semestre_UsuarioId(id, securityUtils.getCurrentUserId())
                 .orElseThrow(() -> new ParcialNotFoundException("No existe parcial asociado al ID: " + id));

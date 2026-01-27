@@ -23,10 +23,15 @@ public class TareaController {
 
     @GetMapping
     public List<TareaResponse> findAll(
-            @RequestParam(required = false) Long materiaId,
-            @RequestParam(required = false) EstadoTareaRequest estado
+            @RequestParam(required = false) Long semestreId
     ) {
-        return service.findAll(materiaId, estado).stream().map(mapper::toResponse).toList();
+        if (semestreId != null) {
+            return service.findBySemestre(semestreId).stream()
+                    .map(mapper::toResponse)
+                    .toList();
+        }
+
+        return service.findAll().stream().map(mapper::toResponse).toList();
     }
 
     @GetMapping("/stats")

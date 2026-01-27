@@ -18,6 +18,7 @@ public record ArchivoResponse(
         String googleDriveWebViewLink,
         String descripcion,
         LocalDate fechaModificacion,
-        MateriaResponse materia
+        Long materiaId,
+        String materiaNombre
 ) {
 }

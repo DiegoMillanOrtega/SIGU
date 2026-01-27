@@ -2,6 +2,7 @@ import { inject, Injectable, Signal } from '@angular/core';
 import { HttpClient, httpResource, HttpResourceRef } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SemestreInterface } from '@/interface/semestre.interface';
+import { SemestreRequest } from '@/interface/semestre-request.interface';
 
 @Injectable({providedIn: 'root'})
 export class SemestreService {
@@ -23,6 +24,10 @@ export class SemestreService {
 
     guardaSemestre(semestre: SemestreInterface) {
         return this.http.post<SemestreInterface>(`${this.baseUrl}`, semestre);
+    }
+
+    actualizarSemestre(id: string, semestre: Partial<SemestreRequest>) {
+        return this.http.patch<SemestreInterface>(`${this.baseUrl}/${id}`, semestre);
     }
     
     eliminarSemestre(id: string) {

@@ -47,7 +47,7 @@ export default class ParcialComponent {
     loading = signal(false);
 
     activeFilter = signal<ParcialEstado>('all');
-    parcialesResource = this.parcialService.getParciales();
+    parcialesResource = this.parcialService.getParcialesSemestreActivo();
 
     parcialesFiltrados = computed(() => {
         const parciales = this.parcialesResource.value();
